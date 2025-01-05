@@ -1,5 +1,5 @@
 import React from "react";
-import { Flex, Heading, Link, Button } from "@chakra-ui/react";
+import { Flex, Heading} from "@chakra-ui/react";
 
 const Header = () => (
   <Flex
@@ -17,7 +17,7 @@ const Header = () => (
       {/* <Link href="#" fontWeight="bold" color="gray.800">
         Features
       </Link> */}
-      <Button colorScheme=" Mint">Beta Version</Button>
+
     </Flex>
   </Flex>
 );
