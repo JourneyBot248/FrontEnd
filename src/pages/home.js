@@ -2,97 +2,96 @@ import React, { useState } from "react";
 import Map from "../components/Map";
 import Header from "../components/Header";
 import Chat from "../components/Chat";
-import ItineraryCard from "../components/ItineraryCard"; // 일정 카드 컴포넌트
-import { Box, Grid, Button, Input } from "@chakra-ui/react";
+import ItineraryView from "../components/ItineraryView";
+import {
+  Box,
+  Grid,
+  Button,
+  Collapse,
+  Avatar,
+} from "@chakra-ui/react";
+import itineraryData from "../japan_itinerary.json";
+import logo from "../image/icon.png";
 
 const Home = () => {
-  const [coordinates] = useState([41.8781, -87.6298]);
-  const [itinerary, setItinerary] = useState([]);
-  const [title, setTitle] = useState("");
-  const [location, setLocation] = useState("");
-  const [date, setDate] = useState("");
-  const [time, setTime] = useState("");
-  const [description, setDescription] = useState("");
+  const [coordinates, setCoordinates] = useState([35.6895, 139.6917]); // Default Tokyo just for now test purpose
+  const [showChat, setShowChat] = useState(false);
+  const [selectedPath, setSelectedPath] = useState([]);  
 
-  // 일정 추가 함수
-  const handleAddCard = () => {
-    const newCard = { title, location, date, time, description };
-    setItinerary([...itinerary, newCard]);
-    // 입력 필드 초기화
-    setTitle("");
-    setLocation("");
-    setDate("");
-    setTime("");
-    setDescription("");
+  const handleSelectDay = (dayIndex) => {
+    const selectedDay = itineraryData.itinerary.find(day => day.day === dayIndex);
+    if (selectedDay && selectedDay.schedule.length > 0) {
+      setSelectedPath(selectedDay.schedule);
+      setCoordinates([selectedDay.schedule[0].latitude, selectedDay.schedule[0].longitude]);
+    } else {
+      setSelectedPath([]);
+      setCoordinates([35.6895, 139.6917]); 
+    }
   };
 
   return (
-    <Box>
-      <Header />
-      <Grid templateColumns="2fr 1fr" gap={4} padding="20px">
-        <Box>
-          <h1 style={{ textAlign: "center" }}>Chicago</h1>
-          <div style={{ marginBottom: "20px" }}>
-            <Map coordinates={coordinates} />
-          </div>
+    <Box width="100%" height="100vh" position="relative">
+      <Box position="sticky" top="0" zIndex="1500" bg="white" boxShadow="md">
+        <Header />
+      </Box>
+
+      <Grid templateColumns="400px 1fr" height="calc(100vh - 60px)">
+        {/* lef side bar.! */}
+        <Box 
+          padding="20px" 
+          backgroundColor="#F5F5F5" 
+          overflowY="auto" 
+          height="100%"
+        >
+          <ItineraryView data={itineraryData} onSelectDay={handleSelectDay} />
         </Box>
-        <Box borderWidth="1px" borderRadius="lg" padding="10px">
-          <h2 style={{ textAlign: "center", marginBottom: "10px" }}>Chat System</h2>
-          <Chat />
+
+        {/* right map..!>? */}
+        <Box position="relative" width="100%" height="100%" minHeight="600px">
+          <Map coordinates={coordinates} path={selectedPath} />
         </Box>
       </Grid>
 
-      {/* 일정 입력 필드 */}
-      <Box padding="20px" borderWidth="1px" borderRadius="lg" marginBottom="20px">
-        <h2 style={{ textAlign: "center", marginBottom: "10px" }}>Add Itinerary</h2>
-        <Input
-          placeholder="Title"
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-          marginBottom="10px"
-        />
-        <Input
-          placeholder="Location"
-          value={location}
-          onChange={(e) => setLocation(e.target.value)}
-          marginBottom="10px"
-        />
-        <Input
-          type="date"
-          value={date}
-          onChange={(e) => setDate(e.target.value)}
-          marginBottom="10px"
-        />
-        <Input
-          type="time"
-          value={time}
-          onChange={(e) => setTime(e.target.value)}
-          marginBottom="10px"
-        />
-        <Input
-          placeholder="Description"
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-          marginBottom="20px"
-        />
-        <Button colorScheme="teal" onClick={handleAddCard}>
-          Add Itinerary
+      {/* just letting me know that this is  floating chat button & chatBox */}
+      <Box position="fixed" bottom="30px" right="30px" zIndex="2000">
+        <Button
+          onClick={() => setShowChat(!showChat)}
+          borderRadius="full"
+          variant="unstyled"
+          p={0}
+          w="56px"
+          h="56px"
+          bg="blue.500"
+          _hover={{ bg: "blue.600" }}
+          boxShadow="lg"
+          aria-label="Open Chat"
+        >
+          <Avatar name="Support" src={logo} fallbackSrc="https://via.placeholder.com/150" />
         </Button>
-      </Box>
 
-      {/* 일정 카드 표시 */}
-      <Box padding="20px">
-        <h2 style={{ textAlign: "center", marginBottom: "10px" }}>My Itinerary</h2>
-        {itinerary.map((item, index) => (
-          <ItineraryCard
-            key={index}
-            title={item.title}
-            location={item.location}
-            date={item.date}
-            time={item.time}
-            description={item.description}
-          />
-        ))}
+        <Collapse in={showChat} animateOpacity>
+          <Box
+            mt={2}
+            bg="white"
+            border="1px solid"
+            borderColor="gray.200"
+            borderRadius="lg"
+            boxShadow="lg"
+            p={4}
+            width="350px"
+            maxHeight="80vh"
+            position="fixed"
+            bottom="90px"
+            right="30px"
+            overflow="auto"
+            display="flex"
+            flexDirection="column"
+            justifyContent="space-between"
+            zIndex="2000"
+          >
+            <Chat onBack={() => setShowChat(false)} />
+          </Box>
+        </Collapse>
       </Box>
     </Box>
   );

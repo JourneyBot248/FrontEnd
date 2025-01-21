@@ -11,7 +11,7 @@ import {
   Heading,
 } from "@chakra-ui/react";
 
-const Chat = () => {
+const Chat = ({ onBack }) => {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
 
@@ -20,7 +20,7 @@ const Chat = () => {
       const newMessage = { text: input, sender: "You" };
       setMessages((prev) => [...prev, newMessage]);
 
-      // Simulate a bot reply
+      //this just gives me the fixed bot responses..
       const botReply = { text: "Thanks for your message! How can I help?", sender: "Bot" };
       setTimeout(() => {
         setMessages((prev) => [...prev, botReply]);
@@ -42,14 +42,16 @@ const Chat = () => {
       boxShadow="md"
       overflow="hidden"
     >
-      {/* Header */}
+      {/* header for chat box  */}
       <Box bg="blue.500" py={3} textAlign="center">
         <Heading size="md" color="white">
           Support ChatBot
         </Heading>
       </Box>
 
-      {/* Chat Messages */}
+
+
+      {/* chat messages..!? */}
       <VStack
         spacing={3}
         px={4}
@@ -77,8 +79,8 @@ const Chat = () => {
               borderRadius="md"
               maxW="70%"
               textAlign="left"
-              wordBreak="break-word" /* Prevents text overflow */
-              whiteSpace="normal"   /* Ensures proper line wrapping */
+              wordBreak="break-word"
+              whiteSpace="normal"
             >
               <Text fontWeight="bold" fontSize="xs">
                 {msg.sender}
@@ -89,7 +91,7 @@ const Chat = () => {
         ))}
       </VStack>
 
-      {/* Input Box */}
+      {/* here is input Box */}
       <Flex p={3} bg="white" borderTop="1px solid" borderColor="gray.200" align="center">
         <Input
           placeholder="Type a message..."
